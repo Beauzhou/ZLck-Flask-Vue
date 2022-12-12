@@ -1,0 +1,59 @@
+version: '3'
+services:
+  nginx:
+    restart: always
+    image: nginx
+    container_name: nginx
+    ports:
+      - 80:80
+#    volumes:
+#      - /usr/project/ZLBBS-back-end/nginx.conf:/etc/nginx/nginx.conf
+#      - /usr/project/dist/:/usr/share/nginx/html
+#      - /home/application/docker_nginx/logs:/var/log/nginx
+#      - /usr/image:/usr/image
+    volumes:
+      - D:/study/第三学期/分布式/毕业设计/ZLBBS-back-end/nginx.conf:/etc/nginx/nginx.conf
+      - D:/study/第三学期/分布式/毕业设计/ZLBBS-front-end/dist/:/usr/share/nginx/html
+      - D:/study/第三学期/分布式/毕业设计/ZLBBS-back-end/app/image:/usr/image
+    networks:
+      - myweb
+
+  myredis:
+    container_name: myredis
+    image: redis:6.0.6
+    restart: always
+    ports:
+      - 6379:6379
+    privileged: true
+    volumes:
+      - $PWD/data:/data
+#      - $PWD/conf/redis.conf:/usr/local/redis/redis.conf
+      - D:/study/第三学期/分布式/毕业设计/ZLBBS-back-end/app/redis.conf:/usr/local/redis/redis.conf
+    networks:
+      - myweb
+  mysql:
+    restart: always
+    image: mysql:5.7
+    container_name: mysql-5.7
+    volumes:
+      - D:/study/第三学期/分布式/毕业设计/ZLBBS-back-end/my.cnf:/usr/local/mysql/conf
+    environment:
+#      - "MYSQL_ROOT_PASSWORD=flask_vue123"
+      - "MYSQL_ROOT_PASSWORD=980505"
+      - "MYSQL_DATABASE=root"
+    ports:
+      - 3306:3306
+    networks:
+      - myweb
+  zlbbs:
+    build: .
+    container_name: zlbbs
+    restart: on-failure
+    networks:
+      - myweb
+    ports:
+      - 5000:5000
+
+networks:
+  myweb:
+    external: false
